@@ -6,6 +6,11 @@ import std.algorithm, std.getopt, std.stdio, std.math, std.random;
 struct Team {
 	string name;
 	double score;
+
+	/** compare two teams */
+	double opCmp(const Team other) const {
+		return score - other.score;
+	}
 }
 
 /**
@@ -537,6 +542,15 @@ void round(out Team[32] teams, size_t nTeams, bool verbose = false) {
 	}
 }
 
+/** 
+ write a sorted array of teams
+ Params: teams The list of teams
+*/
+void writeTeams(Team [] teams) {
+	teams.sort!("a > b")();
+	foreach (t; teams) if (!isEliminated(t)) writefln("%s; %.1f%%", t.name, t.score * 100.0);
+}
+
 /** the main function */
 void main(string [] args) {
 	bool showProba, showElo, showPool, verbose;
@@ -583,35 +597,35 @@ void main(string [] args) {
 		writeln("======================================");
 		Team [32] teams;
 		first_round(teams, verbose);
-		foreach (t; teams) writefln("%s; %.1f%%", t.name, t.score * 100.0);
+		writeTeams(teams);
 		writeln("==================================================");
 		writeln();
 
 		writeln("chance d'atteindre les quarts de finale");
 		writeln("=======================================");
 		round(teams, 8, verbose);		
-		foreach (t; teams) if (!isEliminated(t)) writefln("%s; %.1f%%", t.name, t.score * 100.0);
+		writeTeams(teams);
 		writeln("==================================================");
 		writeln();
 
 		writeln("chance d'atteindre les demis finale");
 		writeln("===================================");
 		round(teams, 4, verbose);		
-		foreach (t; teams) if (!isEliminated(t))  writefln("%s; %.1f%%", t.name, t.score * 100.0);
+		writeTeams(teams);
 		writeln("==================================================");
 		writeln();
 
 		writeln("chance d'atteindre la finale");
 		writeln("============================");
 		round(teams, 2, verbose);
-		foreach (t; teams) if (!isEliminated(t))  writefln("%s; %.1f%%", t.name, t.score * 100.0);
+		writeTeams(teams);
 		writeln("==================================================");
 		writeln();
 
 		writeln("chance de remporter la coupe du monde 2026");
 		writeln("==========================================");
 		round(teams, 1, verbose);
-		foreach (t; teams) if (!isEliminated(t)) writefln("%s; %.1f%%", t.name, t.score * 100.0);
+		writeTeams(teams);
 		writeln("==================================================");
 		writeln();
 	}
