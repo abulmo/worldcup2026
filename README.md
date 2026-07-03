@@ -2,7 +2,7 @@ A simple script in the D language to evaluate who is going to win the 2026 world
 Note that the output is in French as an indication to who is going to win :-)
 
 Here is the current prediction:
-'''
+```
 ==================================================
 
 chance d'atteindre les 8èmes de finale
@@ -118,5 +118,4 @@ Australie; 0.1%
 Paraguay; 0.1%
 Cap-Vert; 0.0%
 Ghana; 0.0%
-==================================================
-'''
+```
