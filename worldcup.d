@@ -178,6 +178,7 @@ static immutable string[] ELIMINATED  = [
 	"Suède", "Côte d'Ivoire", "Équateur", 
 	"RD Congo", "Bosnie-et-Herzégovine", "Sénégal",
 	"Autriche", "Algérie", "Croatie", 
+	"Australie", "Cap-Vert", "Ghana",
 ];
 
 /** Pool struct */
