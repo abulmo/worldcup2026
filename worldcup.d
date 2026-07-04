@@ -20,30 +20,30 @@ struct Team {
 
 static immutable Team [] ELO = [
 	{ "France", 1916.24 },
-	{ "Argentine", 1907.40 },
-	{ "Espagne", 1879.58 },
+	{ "Argentine", 1913.71 },
+	{ "Espagne", 1892.28 },
 	{ "Angleterre", 1850.97 },
 	{ "Brésil", 1804.92 },
 	{ "Maroc", 1788.56 },
+	{ "Portugal", 1787.85 },
 	{ "Pays-Bas", 1775.84 },
-	{ "Portugal", 1764.86 },
 	{ "Belgique", 1756.51 },
 	{ "Mexique", 1754.30 },
-	{ "Colombie", 1712.60 },
+	{ "Colombie", 1739.39 },
 	{ "Allemagne", 1726.22 },
 	{ "Croatie", 1723.05 },
+	{ "Suisse", 1696.30 },
 	{ "États-Unis", 1690.33 },
-	{ "Suisse", 1676.00 },
 	{ "Japon", 1673.68 },
 	{ "Sénégal", 1653.43 },
 	{ "Uruguay", 1634.70 },
 	{ "Norvège", 1617.67 },
 	{ "Iran", 1609.85 },
 	{ "Autriche", 1598.82 },
+	{ "Égypte", 1597.04 },
 	{ "Équateur", 1592.59 },
-	{ "Égypte", 1584.71 },
 	{ "Turquie", 1582.54 },
-	{ "Australie", 1581.35 },
+	{ "Australie", 1581.51 },
 	{ "Algérie", 1576.80 },
 	{ "Canada", 1571.34 },
 	{ "Côte d'Ivoire", 1565.47 },
@@ -54,9 +54,9 @@ static immutable Team [] ELO = [
 	{ "Écosse", 1491.22 },
 	{ "Panama", 1478.41 },
 	{ "Tchéquie", 1467.26 },
+	{ "Afrique du Sud", 1451.24 },
 	{ "Tunisie", 1426.58 },
 	{ "Arabie saoudite", 1425.52 },
-	{ "Afrique du Sud", 1451.24 },
 	{ "Qatar", 1411.06 },
 	{ "Ouzbékistan", 1409.473},
 	{ "Bosnie-et-Herzégovine", 1408.93 },
@@ -179,6 +179,8 @@ static immutable string[] ELIMINATED  = [
 	"RD Congo", "Bosnie-et-Herzégovine", "Sénégal",
 	"Autriche", "Algérie", "Croatie", 
 	"Australie", "Cap-Vert", "Ghana",
+	// after round of 16
+	"Canada", "Paraguay",
 ];
 
 /** Pool struct */
@@ -316,7 +318,12 @@ Team [2] getPoolResults(string [2] names) {
 
 /**
  * Write the result & classsification of a pool
- * Params: pool the pool to write the result from
+ * Params: pool the pool		if (isEliminated(p.names[0])) {
+			p.l = 1.0; p.d = p.w = 0.0;
+		} else if (isEliminated(p.names[1])) {
+			p.w = 1.0; p.d = p.l = 0.0;
+		} 
+ to write the result from
  */
 void writePool(Pool p) {
 	struct TeamEx {
@@ -527,15 +534,22 @@ void round(out Team[32] teams, size_t nTeams, bool verbose = false) {
 		foreach (j_i; 0 .. n / 2)
 		foreach (k_i; 0 .. n / 2) {
 			size_t j = i * n + j_i, k = i * n + n / 2 + k_i;
-			if (isEliminated(teams[j]) || isEliminated(teams[k])) continue;
 			Proba p = Proba([ teams[j].name, teams[k].name ]);
+			if (isEliminated(p.names[0])) {
+				if (isEliminated(p.names[1])) {
+					p.w = p.d = p.l = 0.0;
+				} else {
+					p.l = 1.0; p.d = p.w = 0.0;
+				}
+			} else if (isEliminated(p.names[1])) {
+				p.w = 1.0; p.d = p.l = 0.0;
+			} 
 			Team [2] t = [ { p.names[0], p.w + p.d / 2.0 }, { p.names[1], p.l + p.d / 2.0 } ]; 
 			if (verbose) {
 				Team [2] m = matchExpected(p.names);
 				writeMatch(m);
 				writePercentage(t);
 				Team [2] prev = [previousTeams[j], previousTeams[k]];
-				writePercentage(prev);
 			}			
 			teams[j].score += t[0].score * previousTeams[j].score * previousTeams[k].score;
 			teams[k].score += t[1].score * previousTeams[k].score * previousTeams[j].score;;
